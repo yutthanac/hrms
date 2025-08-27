@@ -1,0 +1,124 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--txt-main);
+}
+
+/* Content ขวา */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.textDashbord {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Flex layout */
+.mywork-content {
+  display: flex;
+  gap: 1rem;
+}
+
+/* List ซ้าย */
+.mywork-left {
+  width: 250px;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+}
+
+.task-item {
+  background: var(--bg-main);
+  color: #ffffff;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.task-item.active,
+.task-item:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.mywork-right {
+  flex: 1;
+  background: #ffffff; /* เปลี่ยนเป็นสีขาว */
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(206, 200, 200, 0.2);
+}
+
+
+.task-detail textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  resize: vertical;
+}
+
+.task-detail input[type="range"] {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.attachments-preview {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.attachment-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.attachment-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255, 0, 0, 0.7);
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-submit {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-back {
+  margin-bottom: 1rem;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1rem;
+  cursor: pointer;
+}

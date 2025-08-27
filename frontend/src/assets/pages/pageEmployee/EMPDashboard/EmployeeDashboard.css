@@ -1,0 +1,110 @@
+/* ตัวคุมเต็มจอ */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  background-color: #121212;
+  color: #f1f1f1;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: auto;
+}
+
+.main-panel {
+  margin-left:var(--sidebar-width);             /* เว้นพื้นที่ Sidebar */
+  width:calc(100vw - var(--sidebar-width));     /* กว้างเต็มจอที่เหลือ */
+  height:100vh;                                 /* สูงเต็ม */
+  overflow-y:auto;                              /* เลื่อนภายใน */
+  padding:50px;
+  box-sizing:border-box;
+  background:radial-gradient(ellipse at top,
+            var(--bg-main) 0%, #363646 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ส่วนหัวโปรไฟล์ ขวาบน */
+.profile-header {
+  position: fixed;
+  top: 1.5rem;
+  right: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1000;
+  background-color: #181818cc;
+  padding: 0.3rem 0.8rem;
+  border-radius: 25px;
+  box-shadow: 0 0 10px #4fc3f7aa;
+  user-select: none;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #ee4b0a;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #4fc3f7;
+}
+
+/* หัวข้อข่าวสาร */
+.main-panel h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  font-size: 2.4rem;
+  text-align: center;
+  user-select: none;
+}
+
+/* ข้อความข่าวสาร */
+.main-panel p {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #cbd5e1;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  user-select: none;
+  overflow-y: auto;
+}
+
+/* กล่องข้อมูลด่วน */
+.quick-info {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px;
+}
+
+.card {
+  background-color: #222;
+  padding: 1.5rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+  font-weight: 700;
+  font-size: 1.25rem;
+  min-width: 220px;
+  text-align: center;
+  user-select: none;
+}
+
+/* ปุ่มยื่นขอลา */
+.shortcuts {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+}
+

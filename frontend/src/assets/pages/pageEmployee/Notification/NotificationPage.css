@@ -1,0 +1,172 @@
+:root {
+  --sidebar-width: 250px;
+  --bg-main: #101728;
+  --bg-card: #1a2238;
+  --txt-main: #f1f1f1;
+  --txt-accent: #4fc3f7;
+  --txt-blue: #4fc3f7;
+  --txt-muted: #cccccc;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+  color: var(--txt-main);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+/* ---------- WRAPPER ---------- */
+.notification-page-container {
+  position: relative;
+  margin-left: var(--sidebar-width);
+  width: calc(100vw - var(--sidebar-width));
+  height: 100vh;
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
+  overflow-y: auto;
+}
+
+/* ---------- BACK BUTTON ---------- */
+.back-button {
+  background: transparent;
+  border: 1.5px solid var(--txt-accent);
+  color: var(--txt-accent);
+  padding: .4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: background .2s, color .2s;
+}
+.back-button:hover {
+  background: var(--txt-accent);
+  color: var(--bg-main);
+}
+
+/* ---------- HEADER ---------- */
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.notification-page-container h1 {
+  color: var(--txt-blue);
+  margin: 0;
+  font-size: 1.8rem;
+  flex: 1;
+}
+
+/* ---------- CLEAR BUTTON ---------- */
+.clear-button {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+.clear-button:hover {
+  background-color: #d32f2f;
+}
+
+/* ---------- LIST ---------- */
+.notification-list {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.notification-item {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.25s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.notification-item.unread {
+  border-left: 4px solid var(--txt-blue);
+}
+.notification-item.read {
+  opacity: 0.75;
+}
+.notification-item:hover {
+  background: #253150;
+}
+
+/* ---------- SUMMARY ---------- */
+.notification-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+.notification-type {
+  color: var(--txt-accent);
+  font-weight: 600;
+  flex: 1 1 auto;
+}
+.notification-title {
+  flex: 2 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notification-date {
+  flex: 0 0 auto;
+  font-size: .85rem;
+  color: var(--txt-muted);
+}
+
+/* ---------- DETAILS ---------- */
+.notification-details {
+  margin-top: .8rem;
+  font-size: .9rem;
+  line-height: 1.4;
+  color: var(--txt-main);
+}
+
+/* ---------- DELETE BUTTON ---------- */
+.delete-button {
+  background: transparent;
+  border: none;
+  color: #f87171;
+  font-size: 1.2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 14px;
+}
+.delete-button:hover {
+  color: #ef4444;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 600px) {
+  .notification-page-container {
+    margin-left: 0;
+    width: 100vw;
+    padding: 1rem;
+  }
+  .notification-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .notification-date {
+    margin-top: .3rem;
+  }
+}

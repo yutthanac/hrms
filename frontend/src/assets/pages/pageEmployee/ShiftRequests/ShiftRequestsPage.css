@@ -1,0 +1,10 @@
+.shift-requests-container {
+  width: 100vw;
+  height: 100vh;       /* เต็มความสูงหน้าจอ */
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: #121212;
+  color: #e0e0e0;
+  overflow-y: auto;    /* เลื่อนแนวตั้งได้ */
+  overflow-x: hidden;  /* ป้องกันเลื่อนแนวนอน */
+}

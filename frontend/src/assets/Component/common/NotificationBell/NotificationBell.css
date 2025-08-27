@@ -1,0 +1,84 @@
+/* ---------------------------------------------------
+   ส่วน “กรอบขวามือ”  (ดันไปติดขอบขวา + เรียงแนวนอน)
+--------------------------------------------------- */
+.profile-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;   /* ซ้าย–ขวา */
+}
+
+.header-actions{                 /* <–– div ที่หุ้มกระดิ่ง + โปรไฟล์ */
+  display:flex;
+  align-items:center;
+  gap:1.1rem;                    /* ระยะห่างระหว่างกระดิ่งกับรูป */
+  margin-left:auto;              /* ดันกลุ่มนี้ไปชิดขวา */
+}
+
+/* ---------------------------------------------------
+   **กระดิ่ง + pop-over** (นำมาจากที่ส่งมาแล้ว เติมแค่ z-index สูงหน่อย)
+--------------------------------------------------- */
+/* container  */
+.bell-wrapper{position:relative;display:inline-block;}
+
+/* bell button */
+.bell-btn{
+  position:relative;
+  background:transparent;
+  border:none;
+  font-size:1.6rem;
+  cursor:pointer;
+  color:#f3f3f3;
+  padding:.2rem .4rem;
+  transition:transform .15s;
+}
+.bell-btn:hover{transform:scale(1.1);}
+
+/* badge  (จำนวน unread) */
+.badge{
+  position:absolute;top:-2px;right:-2px;
+  background:#ff4757;
+  color:#fff;
+  border-radius:50%;
+  font-size:.65rem;
+  line-height:1;
+  padding:.15rem .35rem;
+  font-weight:700;
+}
+
+/* pop‑over */
+.bell-pop{
+  position:absolute;
+  top:120%;            /* ใต้กระดิ่งนิดนึง */
+  right:0;
+  width:260px;
+  background:#1f1f1f;
+  border:1px solid #333;
+  border-radius:8px;
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+  padding:12px 14px;
+  z-index:500;         /* ให้สูงกว่าพวก sidebar */
+}
+
+.bell-pop h4{margin:0 0 8px;color:#4fc3f7;font-size:1.05rem;}
+.empty{color:#888;padding:8px 0 4px;text-align:center;}
+
+.bell-list{
+  list-style:none;margin:0;padding:0;max-height:240px;overflow-y:auto;
+}
+.bell-list li{
+  display:flex;gap:.6rem;align-items:flex-start;
+  padding:6px 4px;border-radius:6px;cursor:pointer;
+}
+.bell-list li.unread{background:#272727;}
+.bell-list li:hover{background:#2d2d2d;}
+.icon{font-size:1.1rem;margin-top:1px;}
+.txt .title{font-size:.9rem;color:#e0e0e0;}
+.txt .date{font-size:.75rem;color:#888;}
+
+.all-btn{
+  margin-top:8px;width:100%;
+  background:#4fc3f7;color:#121212;border:none;
+  padding:.4rem 0;border-radius:6px;
+  font-weight:600;font-size:.85rem;cursor:pointer;
+}
+.all-btn:hover{background:#38b0e3;}

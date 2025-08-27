@@ -1,0 +1,29 @@
+
+.main-content{
+  margin-left:var(--sidebar-width);             /* เว้นพื้นที่ Sidebar */
+  width:calc(100vw - var(--sidebar-width));     /* กว้างเต็มจอที่เหลือ */
+  height:100vh;                                 /* สูงเต็ม */
+  overflow-y:auto;                              /* เลื่อนภายใน */
+  padding:50px;
+  box-sizing:border-box;
+  background:radial-gradient(ellipse at top,
+            var(--bg-main) 0%, #27275a 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  flex: 1;
+  overflow-y: auto;
+}
+.card-leave-summary {
+  background: rgb(196, 191, 191);
+  color: black;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  min-width: 220px;
+  text-decoration-color: black
+
+}
+.card-leave-summary h2{
+   color: black;
+}

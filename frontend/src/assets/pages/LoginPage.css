@@ -1,0 +1,74 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+input, textarea, button {
+  outline: none;
+}
+
+.hidden-input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #121212;
+}
+
+.login-box {
+  background-color: #1e1e1e;
+  padding: 6rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px #4fc3f7aa;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  text-align: center; /* ให้ทุกอย่างในกล่องตรงกลาง */
+}
+
+.login-box img.logo {
+  display: block;
+  margin: 0 auto 20px;
+  width: 100px;
+}
+
+.login-box h2 {
+  color: #4fc3f7;
+  margin-bottom: 1.5rem;
+}
+
+.login-box input {
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #2c2c2c;
+  color: white;
+}
+
+.login-box button {
+  background-color: #4fc3f7;
+  border: none;
+  padding: 0.8rem;
+  color: #121212;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 1rem;
+}
