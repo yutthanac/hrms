@@ -20,7 +20,7 @@ export default function ProfilePopover({ userId }) {
     setLoading(true);
     setError('');
     axios
-      .get(`http://localhost:5000/api/users/${userId}`)
+      .get(`http://localhost:5000/api/users/${userId}/profile`)  // ✅ แก้ตรงนี้
       .then((res) => setUser(res.data))
       .catch((err) => {
         console.error('❌ ดึงข้อมูลผู้ใช้ล้มเหลว:', err.response?.data || err.message);
@@ -34,7 +34,7 @@ export default function ProfilePopover({ userId }) {
       if (
         popRef.current && !popRef.current.contains(e.target) &&
         toggleRef.current && !toggleRef.current.contains(e.target)
-      ){
+      ) {
         setOpen(false);
       }
     }
@@ -61,14 +61,13 @@ export default function ProfilePopover({ userId }) {
       </button>
 
       {open && !loading && !error && user && (
-  <div ref={popRef} className="profile-pop-card" role="dialog">
-    <h4>ข้อมูลด่วน</h4>
-    <p><strong>ชื่อ–นามสกุล:</strong> {user.full_name || '-'}</p>
-    <p><strong>ตำแหน่ง:</strong> {user.role_name || '-'}</p>
-    <p><strong>แผนก:</strong> {user.department_name || '-'}</p>
-  </div>
-)}
-
+        <div ref={popRef} className="profile-pop-card" role="dialog">
+          <h4>ข้อมูลด่วน</h4>
+          <p><strong>ชื่อ–นามสกุล:</strong> {user.full_name || '-'}</p>
+          <p><strong>ตำแหน่ง:</strong> {user.role_name || '-'}</p>
+          <p><strong>แผนก:</strong> {user.department_name || '-'}</p>
+        </div>
+      )}
     </div>
   );
 }

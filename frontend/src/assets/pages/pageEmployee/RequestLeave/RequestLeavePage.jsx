@@ -1,158 +1,113 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './RequestLeavePage.css';
 import EmployeeSidebar from '../../../Component/Employee/EmployeeSidebar';
 
 const leaveTypes = [
-  'ลาพักผ่อน',
-  'ลาป่วย',
-  'ลากิจส่วนตัว',
-  'ลาคลอดบุตร',
-  'ลาพักผ่อนลากิจเพื่อนเดินทางไปต่างประเทศ',
-  'ลาอุปสมบทหรือลาไปประกอบพิธีฮัจย์',
-  'การลาไปฝึกอบรม',
-  'ลาเข้ารับเลือกหรือเข้ารับการเตรียมพล',
+  { value: 'vacation', label: 'ลาพักผ่อน' },
+  { value: 'sick', label: 'ลาป่วย' },
+  { value: 'personal', label: 'ลากิจส่วนตัว' },
+  { value: 'maternity', label: 'ลาคลอดบุตร' },
+  { value: 'travel', label: 'ลาพักผ่อนลากิจเพื่อนเดินทางไปต่างประเทศ' },
+  { value: 'ordination', label: 'ลาอุปสมบทหรือลาไปประกอบพิธีฮัจย์' },
+  { value: 'training', label: 'การลาไปฝึกอบรม' },
+  { value: 'military', label: 'ลาเข้ารับเลือกหรือเข้ารับการเตรียมพล' },
 ];
 
 const RequestLeavePage = () => {
   const navigate = useNavigate();
+
+  // สมมุติว่ามี user_id เก็บไว้ใน localStorage หลัง login
+  const userId = localStorage.getItem('userId') || '';
+
   const [form, setForm] = useState({
-    employeeId: '',
-    date: '',
-    name: '',
-    position: '',
-    leaveType: '',
-    fromDate: '',
-    toDate: '',
-    totalDays: '',
-    contact: '',
-    phone: '',
-    delegate: '',
+    user_id: userId,
+    leave_type: '',
+    start_date: '',
+    end_date: '',
+    reason: '',
   });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('ส่งคำขอลาเรียบร้อย');
+    try {
+      const res = await axios.post('http://localhost:5000/api/leave-requests', form);
+      alert(res.data.message || 'ส่งคำขอลาสำเร็จ');
+      navigate('/employee/dashboard');
+    } catch (err) {
+      console.error(err);
+      alert('❌ ส่งคำขอลาไม่สำเร็จ');
+    }
   };
 
   return (
     <main className="main-container">
       <EmployeeSidebar />
-    <div className="leave-form-container">
-    <form className="leave-form-box" onSubmit={handleSubmit}>
-      <button
-        type="button"
-        className="back-button"
-        onClick={() => navigate('/employee/dashboard')}
-      >
-        ← ย้อนกลับ
-      </button>
+      <div className="leave-form-container">
+        <form className="leave-form-box" onSubmit={handleSubmit}>
+          <button
+            type="button"
+            className="back-button"
+            onClick={() => navigate('/employee/dashboard')}
+          >
+            ← ย้อนกลับ
+          </button>
 
-      <h2>HRMS</h2>
+          <h2>แบบฟอร์มขอลา</h2>
 
-      <div className="right">
-        วันที่ <input type="date" name="date" value={form.date} onChange={handleChange} />
+          <p>
+            ประเภทการลา:{' '}
+            <select name="leave_type" value={form.leave_type} onChange={handleChange} required>
+              <option value="">-- เลือกประเภทการลา --</option>
+              {leaveTypes.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </p>
+
+          <p>
+            ตั้งแต่วันที่{' '}
+            <input
+              type="date"
+              name="start_date"
+              value={form.start_date}
+              onChange={handleChange}
+              required
+            />{' '}
+            ถึงวันที่{' '}
+            <input
+              type="date"
+              name="end_date"
+              value={form.end_date}
+              onChange={handleChange}
+              required
+            />
+          </p>
+
+          <p>
+            เหตุผลการลา:{' '}
+            <textarea
+              name="reason"
+              value={form.reason}
+              onChange={handleChange}
+              placeholder="กรอกเหตุผล"
+              required
+            />
+          </p>
+
+          <button type="submit" className="submit-button">
+            ส่งคำขอ
+          </button>
+        </form>
       </div>
-
-      <p>
-        <strong>เรื่อง:</strong> ขออนุญาต{form.leaveType || 'ลาพักผ่อน'}
-      </p>
-
-      <p>
-        ข้าพเจ้า{' '}
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="ชื่อ-นามสกุล"
-        />{' '}
-        ตำแหน่ง{' '}
-        <input
-          type="text"
-          name="position"
-          value={form.position}
-          onChange={handleChange}
-          placeholder="ตำแหน่งงาน"
-        />
-      </p>
-
-      <p>
-        รหัสพนักงาน{' '}
-        <input
-          type="text"
-          name="employeeId"
-          value={form.employeeId}
-          onChange={handleChange}
-          placeholder="เลขพนักงาน"
-        />
-        {' '}ขอลา{' '}
-        <select name="leaveType" value={form.leaveType} onChange={handleChange}>
-          <option value="">-- เลือกประเภทการลา --</option>
-          {leaveTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-      </p>
-
-      <p>
-        ตั้งแต่วันที่{' '}
-        <input
-          type="date"
-          name="fromDate"
-          value={form.fromDate}
-          onChange={handleChange}
-        />{' '}
-        ถึงวันที่{' '}
-        <input type="date" name="toDate" value={form.toDate} onChange={handleChange} />{' '}
-        มีกำหนด{' '}
-        <input
-          type="text"
-          name="totalDays"
-          value={form.totalDays}
-          onChange={handleChange}
-          style={{ width: '60px' }}
-        />{' '}
-        วัน (วันทำการ)
-      </p>
-
-      <p>
-        ในระหว่างลาติดต่อข้าพเจ้าได้ที่{' '}
-        <input
-          type="text"
-          name="contact"
-          value={form.contact}
-          onChange={handleChange}
-          placeholder="ที่อยู่/อีเมล"
-        />{' '}
-        เบอร์โทรศัพท์{' '}
-        <input type="text" name="phone" value={form.phone} onChange={handleChange} />
-      </p>
-
-      <p>
-        ขอมอบหมายงานให้{' '}
-        <input
-          type="text"
-          name="delegate"
-          value={form.delegate}
-          onChange={handleChange}
-          placeholder="ชื่อผู้รับมอบหมาย"
-        />
-      </p>
-
-      <button type="submit" className="submit-button">
-        ส่งคำขอ
-      </button>
-    </form>
-  </div>
-</main>
-
+    </main>
   );
 };
 

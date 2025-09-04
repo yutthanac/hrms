@@ -1,33 +1,32 @@
-// EmployeeDetail.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/pageHead/EmployeeDetail.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import api from '../../../../services/api';
 import './EmployeeDetail.css';
 import testpic from '../../../pic/profile_emp.jpg';
 
-// สมมติข้อมูลพนักงานมาแบบนี้ (ในโปรเจคจริงจะดึงจาก API/DB)
-const employee = {
-  id: 'emp003',
-  photo: testpic,
-  nameTH: 'นางสาวศรีสุดา สายตรง',
-  nameEN: 'Srisuda Saitong',
-  position: 'หัวหน้าแผนก',
-  startDate: '2020-01-15',
-  birthDate: '1985-07-20',
-  gender: 'หญิง',
-  bloodType: 'O',
-  nationality: 'ไทย',
-  religion: 'พุทธ',
-  // ข้อมูลเพิ่มเติม
-  email: 'srisuda.s@example.com',
-  phone: '080-123-4567',
-  address: '123/45 ถนนสุขสวัสดิ์ เขตบางคอแหลม กรุงเทพฯ',
-  department: 'ฝ่ายบริหาร',
-  education: 'ปริญญาตรี บริหารธุรกิจ',
-  maritalStatus: 'โสด',
-};
-
 const EmployeeDetail = () => {
+  const { id } = useParams(); // ⬅️ ดึง employeeId จาก path
   const navigate = useNavigate();
+
+  const [employee, setEmployee] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!id) return;
+    api.get(`/api/users/${id}/profile`)
+      .then((res) => setEmployee(res.data))
+      .catch((err) => {
+        console.error('โหลดข้อมูลพนักงานล้มเหลว:', err);
+        setError('ไม่สามารถโหลดข้อมูลพนักงานได้');
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <div>⏳ กำลังโหลดข้อมูลพนักงาน...</div>;
+  if (error) return <div>❌ {error}</div>;
+  if (!employee) return <div>❌ ไม่พบข้อมูลพนักงาน</div>;
 
   return (
     <div className="detail-container">
@@ -35,64 +34,42 @@ const EmployeeDetail = () => {
         ← ย้อนกลับ
       </button>
 
-      <h1 className="title">ข้อมูลโปรไฟล์หัวหน้าแผนก</h1>
+      <h1 className="title">ข้อมูลโปรไฟล์พนักงาน</h1>
 
       <div className="profile-card">
-        <div className="photo-section">
-          <img
-            src={employee.photo}
-            alt={`รูปพนักงาน ${employee.nameTH}`}
-            className="profile-photo"
-          />
-        </div>
+        
 
         <div className="info-section">
           <h2 className="section-title">ข้อมูลส่วนตัว</h2>
-          <div className="info-row">
-            <strong>ชื่อ:</strong> {employee.nameTH}
-          </div>
-          <div className="info-row">
-            <strong>ชื่อภาษาอังกฤษ:</strong> {employee.nameEN}
-          </div>
-          <div className="info-row">
-            <strong>ตำแหน่ง:</strong> {employee.position}
-          </div>
-          <div className="info-row">
-            <strong>เริ่มงาน:</strong> {employee.startDate}
-          </div>
-          <div className="info-row">
-            <strong>วันเกิด:</strong> {employee.birthDate}
-          </div>
-          <div className="info-row">
-            <strong>เพศ:</strong> {employee.gender}
-          </div>
-          <div className="info-row">
-            <strong>กรุ๊ปเลือด:</strong> {employee.bloodType}
-          </div>
-          <div className="info-row">
-            <strong>สัญชาติ:</strong> {employee.nationality}
-          </div>
-          <div className="info-row">
-            <strong>ศาสนา:</strong> {employee.religion}
-          </div>
-          <div className="info-row">
-            <strong>อีเมล:</strong> {employee.email}
-          </div>
-          <div className="info-row">
-            <strong>เบอร์โทรศัพท์:</strong> {employee.phone}
-          </div>
-          <div className="info-row">
-            <strong>ที่อยู่:</strong> {employee.address}
-          </div>
-          <div className="info-row">
-            <strong>แผนก:</strong> {employee.department}
-          </div>
-          <div className="info-row">
-            <strong>การศึกษา:</strong> {employee.education}
-          </div>
-          <div className="info-row">
-            <strong>สถานภาพสมรส:</strong> {employee.maritalStatus}
-          </div>
+          <div className="info-row"><strong>ชื่อ:</strong> {employee.full_name}</div>
+          <div className="info-row"><strong>ตำแหน่ง:</strong> {employee.role_name}</div>
+          <div className="info-row"><strong>แผนก:</strong> {employee.department_name}</div>
+          <div className="info-row"><strong>วันเกิด:</strong> {employee.birthday}</div>
+          <div className="info-row"><strong>เพศ:</strong> {employee.gender}</div>
+          <div className="info-row"><strong>สัญชาติ:</strong> {employee.nationality}</div>
+          <div className="info-row"><strong>ศาสนา:</strong> {employee.religion}</div>
+          <div className="info-row"><strong>อีเมล:</strong> {employee.email}</div>
+          <div className="info-row"><strong>เบอร์โทรศัพท์:</strong> {employee.phone}</div>
+          <div className="info-row"><strong>ที่อยู่:</strong> {employee.address}</div>
+          <div className="info-row"><strong>สถานภาพสมรส:</strong> {employee.maritalStatus}</div>
+
+          {employee.education && (
+            <>
+              <h2 className="section-title">การศึกษา</h2>
+              <div className="info-row"><strong>วุฒิ:</strong> {employee.education.degree}</div>
+              <div className="info-row"><strong>สาขา:</strong> {employee.education.major}</div>
+              <div className="info-row"><strong>ปีที่จบ:</strong> {employee.education.year}</div>
+              <div className="info-row"><strong>GPA:</strong> {employee.education.gpa}</div>
+            </>
+          )}
+
+          {employee.guardian && (
+            <>
+              <h2 className="section-title">ผู้ปกครอง</h2>
+              <div className="info-row"><strong>ชื่อ:</strong> {employee.guardian.name}</div>
+              <div className="info-row"><strong>ความสัมพันธ์:</strong> {employee.guardian.relation}</div>
+            </>
+          )}
         </div>
       </div>
     </div>

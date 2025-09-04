@@ -1,8 +1,9 @@
 // src/assets/pages/pageEmployee/LeaveHistory/LeaveHistoryPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import EmployeeSidebar from '../../../Component/Employee/EmployeeSidebar';
-import './LeaveHistoryPage.css';  
+import './LeaveHistoryPage.css';
 
 const LeaveHistoryPage = () => {
   const navigate = useNavigate();
@@ -10,16 +11,25 @@ const LeaveHistoryPage = () => {
   const [selectedLeaveId, setSelectedLeaveId] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // สมมุติว่า user_id เก็บไว้ใน localStorage หลัง login
+  const userId = localStorage.getItem('userId');
+
   useEffect(() => {
-    const mockData = [
-      { id: 1, type: 'ลาพักผ่อน', startDate: '2025-07-01', endDate: '2025-07-05', status: 'อนุมัติ', details: 'ลาพักผ่อนประจำปี' },
-      { id: 2, type: 'ลาป่วย',    startDate: '2025-06-15', endDate: '2025-06-16', status: 'อนุมัติ', details: 'เป็นไข้' },
-    ];
-    setTimeout(() => {
-      setLeaveHistory(mockData);
-      setLoading(false);
-    }, 500);
-  }, []);
+    const fetchLeaveHistory = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/leave-requests/${userId}`);
+        setLeaveHistory(res.data);
+      } catch (err) {
+        console.error("Error fetching leave history:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchLeaveHistory();
+    }
+  }, [userId]);
 
   if (loading) return <div className="loading">กำลังโหลดข้อมูล...</div>;
 
@@ -46,14 +56,15 @@ const LeaveHistoryPage = () => {
                   setSelectedLeaveId((prev) => (prev === leave.id ? null : leave.id))
                 }
               >
-                <strong>{leave.type}</strong> | {leave.startDate} ถึง {leave.endDate} | สถานะ: {leave.status}
+                <strong>{leave.leave_type}</strong> | {leave.start_date} ถึง {leave.end_date} | สถานะ: {leave.status}
                 {selectedLeaveId === leave.id && (
                   <div className="leave-details">
-                    <p><strong>ประเภทการลา:</strong> {leave.type}</p>
-                    <p><strong>วันที่เริ่ม:</strong> {leave.startDate}</p>
-                    <p><strong>วันที่สิ้นสุด:</strong> {leave.endDate}</p>
+                    <p><strong>ประเภทการลา:</strong> {leave.leave_type}</p>
+                    <p><strong>วันที่เริ่ม:</strong> {leave.start_date}</p>
+                    <p><strong>วันที่สิ้นสุด:</strong> {leave.end_date}</p>
                     <p><strong>สถานะ:</strong> {leave.status}</p>
-                    <p><strong>รายละเอียด:</strong> {leave.details}</p>
+                    <p><strong>เหตุผล:</strong> {leave.reason}</p>
+                    <p><strong>วันที่ส่งคำขอ:</strong> {new Date(leave.created_at).toLocaleDateString()}</p>
                   </div>
                 )}
               </li>

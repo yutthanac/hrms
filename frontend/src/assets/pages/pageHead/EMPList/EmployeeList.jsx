@@ -1,31 +1,63 @@
-import React, { useState } from 'react';
+// src/pages/pageHead/EmployeeList.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeadSidebar from '../../../Component/Head/HeadSidebar';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import api from '../../../../services/api';
 import './EmployeeList.css';
-
-const employeesData = [
-  { id: 'emp001', name: 'สมชาย ใจดี', position: 'พนักงาน' },
-  { id: 'emp002', name: 'สมหญิง สายตรง', position: 'พนักงาน' },
-  { id: 'emp003', name: 'วิทยา ใจแกร่ง', position: 'พนักงาน' },
-  { id: 'emp004', name: 'Yutthana chaithaisong', position: 'พนักงาน' },
-];
 
 const EmployeeList = () => {
   const navigate = useNavigate();
+  const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const filteredEmployees = employeesData.filter((emp) =>
-    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ✅ ดึงข้อมูล user จาก localStorage
+  let headUser = null;
+  try {
+    headUser = JSON.parse(localStorage.getItem('user'));
+  } catch (e) {
+    console.warn('⚠️ localStorage.user parse error', e);
+  }
+
+  const headId = headUser?.id || null;
+
+  useEffect(() => {
+    if (!headId) {
+      setError('❌ ไม่พบข้อมูลหัวหน้า');
+      setLoading(false);
+      return;
+    }
+
+    api
+      .get(`/api/users/head/${headId}/employees`)
+      .then((res) => {
+        console.log("✅ employees from API:", res.data);
+        setEmployees(res.data || []);
+      })
+      .catch((err) => {
+        console.error('โหลดข้อมูลพนักงานล้มเหลว:', err);
+        setError('โหลดข้อมูลพนักงานไม่สำเร็จ');
+      })
+      .finally(() => setLoading(false));
+  }, [headId]);
+
+  const filteredEmployees = employees.filter((emp) => {
+    const keyword = searchTerm.toLowerCase();
+    return (
+      emp.name?.toLowerCase().includes(keyword) ||
+      String(emp.id).toLowerCase().includes(keyword)
+    );
+  });
 
   const handleExport = () => {
     const exportData = filteredEmployees.map((emp) => ({
       'รหัสพนักงาน': emp.id,
       'ชื่อพนักงาน': emp.name,
-      'ตำแหน่ง': emp.position,
+      'ตำแหน่ง': emp.role_name,
+      'แผนก': emp.department_name,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -36,6 +68,9 @@ const EmployeeList = () => {
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'employee_list.xlsx');
   };
+
+  if (loading) return <div>⏳ กำลังโหลดข้อมูลพนักงาน...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="emp-list-container">
@@ -61,6 +96,7 @@ const EmployeeList = () => {
               <th>รหัสพนักงาน</th>
               <th>ชื่อ</th>
               <th>ตำแหน่ง</th>
+              <th>แผนก</th>
               <th>ความคืบหน้างาน</th>
               <th>เพิ่มงาน</th>
             </tr>
@@ -75,7 +111,8 @@ const EmployeeList = () => {
                 >
                   {emp.name}
                 </td>
-                <td>{emp.position}</td>
+                <td>{emp.role_name}</td>
+                <td>{emp.department_name}</td>
                 <td>
                   <button
                     className="btn-progress"

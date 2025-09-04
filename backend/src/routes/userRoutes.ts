@@ -1,35 +1,16 @@
-// src/routes/users.ts
 import { Router } from "express";
 import pool from "../config/db";
 import { RowDataPacket } from "mysql2";
 
 const router = Router();
 
-/** ------------------------------------------------------------------
- *  GET /api/users
- *  (สำหรับ debug ได้ แต่ไม่ส่ง password ออกไป)
- * ------------------------------------------------------------------ */
-router.get("/", async (_req, res) => {
-  try {
-    const [rows] = await pool.query<RowDataPacket[]>(
-      `SELECT id, username, role_id FROM users ORDER BY id`
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error("Error fetching users:", err);
-    res.status(500).json({ error: "DB error" });
-  }
-});
-
-/** ------------------------------------------------------------------
- *  ฟังก์ชั่นรวมคิวรีข้อมูลผู้ใช้ (ใช้ซ้ำทั้ง /:id และ /by-username)
- *  ปรับคอลัมน์/ตารางตามสคีมาที่คุณมีจริง
- * ------------------------------------------------------------------ */
+/** คิวรีหลัก (ไม่มี user_detail) */
 const USER_SELECT = `
   SELECT 
     u.id,
     u.username,
     u.email,
+    u.phone,
     u.first_name,
     u.last_name,
     u.role_id,
@@ -44,6 +25,20 @@ const USER_SELECT = `
   LEFT JOIN departments d  ON d.id = u.department_id
 `;
 
+/** ───────── GET /api/users (list ทั้งหมด) ───────── */
+router.get("/", async (_req, res) => {
+  try {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `${USER_SELECT} ORDER BY u.id`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ Error fetching users:", err);
+    res.status(500).json({ error: "DB error" });
+  }
+});
+
+/** ───────── GET /api/users/:id ───────── */
 router.get("/:id", async (req, res) => {
   const id = Number(req.params.id);
   if (!id) return res.status(400).json({ error: "Invalid id" });
@@ -56,50 +51,90 @@ router.get("/:id", async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     res.json(rows[0]);
   } catch (err) {
-    console.error("Error fetching user by id:", err);
+    console.error("❌ Error fetching user by id:", err);
     res.status(500).json({ error: "DB error" });
   }
 });
 
-/** ------------------------------------------------------------------
- *  (ออปชัน) GET /api/users/by-username/:username
- *  เผื่อกรณีต้องดึงจาก username หลังล็อกอิน
- * ------------------------------------------------------------------ */
-router.get("/by-username/:username", async (req, res) => {
-  const { username } = req.params;
-  if (!username) return res.status(400).json({ error: "Invalid username" });
+/** ───────── GET /api/users/head/:headId/employees ───────── 
+ * ดึงพนักงานในแผนกเดียวกับหัวหน้า
+ */
+router.get("/head/:headId/employees", async (req, res) => {
+  const headId = Number(req.params.headId);
+  if (!headId) return res.status(400).json({ error: "Invalid head id" });
 
   try {
     const [rows] = await pool.query<RowDataPacket[]>(
-      `${USER_SELECT} WHERE u.username = ? LIMIT 1`,
-      [username]
+      `
+      SELECT 
+        u.id,
+        CONCAT(COALESCE(p.prefix_name,''), u.first_name, ' ', u.last_name) AS name,
+        r.role_name,
+        d.department_name
+      FROM users u
+      LEFT JOIN prefixes p  ON u.prefix_id = p.id
+      LEFT JOIN roles r     ON u.role_id = r.id
+      LEFT JOIN departments d ON u.department_id = d.id
+      WHERE u.department_id = (
+        SELECT department_id FROM users WHERE id = ?
+      )
+      AND u.role_id = 5
+      ORDER BY u.id ASC
+      `,
+      [headId]
     );
-    if (!rows.length) return res.status(404).json({ error: "User not found" });
-    res.json(rows[0]);
+
+    res.json(rows);
   } catch (err) {
-    console.error("Error fetching user by username:", err);
+    console.error("❌ Error fetching employees by head:", err);
     res.status(500).json({ error: "DB error" });
   }
 });
 
-/** ------------------------------------------------------------------
- *  (ออปชัน) GET /api/users/me
- *  ถ้าคุณใช้ JWT: ดึง userId จาก req.user.id ที่ middleware ใส่ไว้
- * ------------------------------------------------------------------ */
-// router.get("/me", async (req: any, res) => {
-//   const userId = Number(req.user?.id);
-//   if (!userId) return res.status(401).json({ error: "Unauthenticated" });
-//   try {
-//     const [rows] = await pool.query<RowDataPacket[]>(
-//       `${USER_SELECT} WHERE u.id = ? LIMIT 1`,
-//       [userId]
-//     );
-//     if (!rows.length) return res.status(404).json({ error: "User not found" });
-//     res.json(rows[0]);
-//   } catch (err) {
-//     console.error("Error fetching /me:", err);
-//     res.status(500).json({ error: "DB error" });
-//   }
-// });
+/** ───────── GET /api/users/employee/:id/detail ───────── 
+ * ดึงข้อมูลรายละเอียดพนักงานแบบเต็ม
+ */
+router.get("/employee/:id/detail", async (req, res) => {
+  const empId = Number(req.params.id);
+  if (!empId) return res.status(400).json({ error: "Invalid employee id" });
+
+  try {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `
+      SELECT 
+        u.id,
+        CONCAT(COALESCE(p.prefix_name,''), u.first_name, ' ', u.last_name) AS full_name,
+        u.email,
+        u.phone,
+        r.role_name,
+        d.department_name,
+        ud.birthday,
+        ud.gender,
+        ud.nationality,
+        ud.religion,
+        ud.ethnicity,
+        ud.blood_type,
+        ud.address,
+        ud.marital_status,
+        ud.start_date
+      FROM users u
+      LEFT JOIN prefixes p   ON u.prefix_id = p.id
+      LEFT JOIN roles r      ON u.role_id = r.id
+      LEFT JOIN departments d ON u.department_id = d.id
+      LEFT JOIN user_detail ud ON u.id = ud.user_id
+      WHERE u.id = ?
+        AND u.role_id = 5
+      `,
+      [empId]
+    );
+
+    if (!rows.length) return res.status(404).json({ error: "Employee not found" });
+    res.json(rows[0]);
+  } catch (err: any) {
+    console.error("❌ SQL ERROR:", err.sqlMessage || err.message);
+    res.status(500).json({ error: err.sqlMessage || "DB error" });
+  }
+});
+
 
 export default router;
